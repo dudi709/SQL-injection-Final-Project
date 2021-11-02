@@ -233,18 +233,16 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
-
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/dudi709/SQL-injection-Final-Project.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/dudi709/SQL-injection-Final-Project?style=for-the-badge
 [contributors-url]: https://github.com/dudi709/SQL-injection-Final-Project/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/dudi709/SQL-injection-Final-Project.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/dudi709/SQL-injection-Final-Project?style=for-the-badge
 [forks-url]: https://github.com/dudi709/SQL-injection-Final-Project/network/members
-[stars-shield]: https://img.shields.io/github/stars/dudi709/SQL-injection-Final-Project.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/dudi709/SQL-injection-Final-Project?style=for-the-badge
 [stars-url]: https://github.com/dudi709/SQL-injection-Final-Project/stargazers
-[issues-shield]: https://img.shields.io/github/issues/dudi709/SQL-injection-Final-Project.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/dudi709/SQL-injection-Final-Project?style=for-the-badge
 [issues-url]: https://github.com/dudi709/SQL-injection-Final-Project/issues
-[license-shield]: https://img.shields.io/github/license/dudi709/SQL-injection-Final-Project.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/dudi709/SQL-injection-Final-Project?style=for-the-badge
 [license-url]: https://github.com/dudi709/SQL-injection-Final-Project/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
