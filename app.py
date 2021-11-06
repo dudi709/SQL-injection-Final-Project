@@ -1,170 +1,130 @@
+import base64
+import datetime
+import io
+import plotly.graph_objs as go
+import cufflinks as cf
+
 import dash
+from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_table
+
 import pandas as pd
-import numpy as np
-from dash.dependencies import Output, Input
 
-data = pd.read_csv("avocado.csv")
-data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d")
-data.sort_values("Date", inplace=True)
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-external_stylesheets = [
-    {
-        "href": "https://fonts.googleapis.com/css2?"
-        "family=Lato:wght@400;700&display=swap",
-        "rel": "stylesheet",
-    },
-]
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
-app.title = "Avocado Analytics: Understand Your Avocados!"
+app.title = "SQL Query Analysis"
 
-app.layout = html.Div(
-    children=[
-        html.Div(
-            children=[
-                html.P(children="🥑", className="header-emoji"),
-                html.H1(
-                    children="Avocado Analytics", className="header-title"
-                ),
-                html.P(
-                    children="Analyze the behavior of avocado prices"
-                    " and the number of avocados sold in the US"
-                    " between 2015 and 2018",
-                    className="header-description",
-                ),
-            ],
-            className="header",
-        ),
-        html.Div(
-            children=[
-                html.Div(
-                    children=[
-                        html.Div(children="Region", className="menu-title"),
-                        dcc.Dropdown(
-                            id="region-filter",
-                            options=[
-                                {"label": region, "value": region}
-                                for region in np.sort(data.region.unique())
-                            ],
-                            value="Albany",
-                            clearable=False,
-                            className="dropdown",
-                        ),
-                    ]
-                ),
-                html.Div(
-                    children=[
-                        html.Div(children="Type", className="menu-title"),
-                        dcc.Dropdown(
-                            id="type-filter",
-                            options=[
-                                {"label": avocado_type, "value": avocado_type}
-                                for avocado_type in data.type.unique()
-                            ],
-                            value="organic",
-                            clearable=False,
-                            searchable=False,
-                            className="dropdown",
-                        ),
-                    ],
-                ),
-                html.Div(
-                    children=[
-                        html.Div(
-                            children="Date Range", className="menu-title"
-                        ),
-                        dcc.DatePickerRange(
-                            id="date-range",
-                            min_date_allowed=data.Date.min().date(),
-                            max_date_allowed=data.Date.max().date(),
-                            start_date=data.Date.min().date(),
-                            end_date=data.Date.max().date(),
-                        ),
-                    ]
-                ),
-            ],
-            className="menu",
-        ),
-        html.Div(
-            children=[
-                html.Div(
-                    children=dcc.Graph(
-                        id="price-chart",
-                        config={"displayModeBar": False},
-                    ),
-                    className="card",
-                ),
-                html.Div(
-                    children=dcc.Graph(
-                        id="volume-chart",
-                        config={"displayModeBar": False},
-                    ),
-                    className="card",
-                ),
-            ],
-            className="wrapper",
-        ),
-    ]
-)
+colors = {
+    "graphBackground": "#F5F5F5",
+    "background": "#ffffff",
+    "text": "#000000"
+}
 
-
-@app.callback(
-    [Output("price-chart", "figure"), Output("volume-chart", "figure")],
-    [
-        Input("region-filter", "value"),
-        Input("type-filter", "value"),
-        Input("date-range", "start_date"),
-        Input("date-range", "end_date"),
-    ],
-)
-def update_charts(region, avocado_type, start_date, end_date):
-    mask = (
-        (data.region == region)
-        & (data.type == avocado_type)
-        & (data.Date >= start_date)
-        & (data.Date <= end_date)
-    )
-    filtered_data = data.loc[mask, :]
-    price_chart_figure = {
-        "data": [
-            {
-                "x": filtered_data["Date"],
-                "y": filtered_data["AveragePrice"],
-                "type": "lines",
-                "hovertemplate": "$%{y:.2f}<extra></extra>",
-            },
-        ],
-        "layout": {
-            "title": {
-                "text": "Average Price of Avocados",
-                "x": 0.05,
-                "xanchor": "left",
-            },
-            "xaxis": {"fixedrange": True},
-            "yaxis": {"tickprefix": "$", "fixedrange": True},
-            "colorway": ["#17B897"],
+app.layout = html.Div([
+    dcc.Upload(
+        id='upload-data',
+        children=html.Div([
+            'Drag and Drop or ',
+            html.A('Select Files')
+        ]),
+        style={
+            'width': '100%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '1px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin': '10px'
         },
+        # Allow multiple files to be uploaded
+        multiple=True
+    ),
+    dcc.Graph(id='Mygraph'),
+    html.Div(id='output-data-upload')
+])
+
+
+def parse_data(contents, filename):
+    content_type, content_string = contents.split(',')
+
+    decoded = base64.b64decode(content_string)
+    try:
+        if 'csv' in filename:
+            # Assume that the user uploaded a CSV or TXT file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')))
+        elif 'xls' in filename:
+            # Assume that the user uploaded an excel file
+            df = pd.read_excel(io.BytesIO(decoded))
+        elif 'txt' or 'tsv' in filename:
+            # Assume that the user upl, delimiter = r'\s+'oaded an excel file
+            df = pd.read_csv(
+                io.StringIO(decoded.decode('utf-8')), delimiter=r'\s+')
+    except Exception as e:
+        print(e)
+        return html.Div([
+            'There was an error processing this file.'
+        ])
+
+    return df
+
+
+@app.callback(Output('Mygraph', 'figure'),
+              [
+                  Input('upload-data', 'contents'),
+                  Input('upload-data', 'filename')
+              ])
+def update_graph(contents, filename):
+    fig = {
+        'layout': go.Layout(
+            plot_bgcolor=colors["graphBackground"],
+            paper_bgcolor=colors["graphBackground"])
     }
 
-    volume_chart_figure = {
-        "data": [
-            {
-                "x": filtered_data["Date"],
-                "y": filtered_data["Total Volume"],
-                "type": "lines",
-            },
-        ],
-        "layout": {
-            "title": {"text": "Avocados Sold", "x": 0.05, "xanchor": "left"},
-            "xaxis": {"fixedrange": True},
-            "yaxis": {"fixedrange": True},
-            "colorway": ["#E12D39"],
-        },
-    }
-    return price_chart_figure, volume_chart_figure
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+        df = df.set_index(df.columns[0])
+        fig['data'] = df.iplot(asFigure=True, kind='scatter', mode='lines+markers', size=1)
+
+    return fig
 
 
-if __name__ == "__main__":
+@app.callback(Output('output-data-upload', 'children'),
+              [
+                  Input('upload-data', 'contents'),
+                  Input('upload-data', 'filename')
+              ])
+def update_table(contents, filename):
+    table = html.Div()
+
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+
+        table = html.Div([
+            html.H5(filename),
+            dash_table.DataTable(
+                data=df.to_dict('rows'),
+                columns=[{'name': i, 'id': i} for i in df.columns]
+            ),
+            html.Hr(),
+            html.Div('Raw Content'),
+            html.Pre(contents[0:200] + '...', style={
+                'whiteSpace': 'pre-wrap',
+                'wordBreak': 'break-all'
+            })
+        ])
+
+    return table
+
+
+if __name__ == '__main__':
     app.run_server(debug=True)
