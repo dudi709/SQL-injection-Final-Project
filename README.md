@@ -83,6 +83,7 @@ First, we performed model training using machine learning libraries so that we c
 * [Tensorflow](https://www.tensorflow.org/)
 * [Keras](https://keras.io/)
 * [Scikit-Learn](https://scikit-learn.org/stable/)
+* [Pandas](https://pandas.pydata.org/)
 
 
 
