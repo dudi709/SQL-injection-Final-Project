@@ -110,6 +110,7 @@ For training the model:
   pip install scikit-learn==0.23.1
   ```
  For running app.py file (dashboard application):
+ * pip
    ```sh
   pip install nltk==3.5
   pip install dash==0.30.0
