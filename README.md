@@ -99,10 +99,28 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
+For training the model:
+* pip
   ```sh
-  npm install npm@latest -g
+  pip install nltk==3.5
+  pip install pandas==1.0.5
+  pip install numpy==1.19.5
+  pip install tensorflow==2.5.0
+  pip install keras==2.6.0
+  pip install scikit-learn==0.23.1
+  ```
+ For running app.py file (dashboard application):
+   ```sh
+  pip install nltk==3.5
+  pip install dash==0.30.0
+  pip install pandas==1.0.5
+  pip install numpy==1.19.5
+  pip install tensorflow==2.5.0
+  pip install keras==2.6.0
+  pip install dash-renderer==0.15.1
+  pip install dash-html-components==0.13.2
+  pip install dash-core-components==0.38.1
+  pip install plotly==5.3.1
   ```
 
 ### Installation
