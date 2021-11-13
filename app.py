@@ -23,6 +23,7 @@ model, tokenizer1 = build_model()
 
 # external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
+"""
 external_stylesheets = [
     {
         "href": "https://fonts.googleapis.com/css2?"
@@ -30,6 +31,7 @@ external_stylesheets = [
         "rel": "stylesheet",
     },
 ]
+"""
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
