@@ -3,17 +3,21 @@ import datetime
 import io
 import plotly.graph_objs as go
 import cufflinks as cf
+import os
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import dash
 from dash.dependencies import Input, Output, State
-import dash_core_components as dcc
-import dash_html_components as html
-import dash_table
+from dash import dcc
+from dash import html
+from dash import dash_table
 
 import pandas as pd
 
 from predict_sql_queries import build_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+import dash_bootstrap_components as dbc
 
 model, tokenizer1 = build_model()
 
@@ -27,7 +31,7 @@ external_stylesheets = [
     },
 ]
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 app.title = "SQL Query Analysis"
 
@@ -41,7 +45,8 @@ app.layout = html.Div(
     children=[
         html.Div(
             children=[
-                html.P(children=html.Img(src="https://img.icons8.com/color/96/000000/sql.png"), className="header-emoji"),
+                html.P(children=html.Img(src="https://img.icons8.com/color/96/000000/sql.png"),
+                       className="header-emoji"),
                 html.H1(
                     children="SQL Query Analysis", className="header-title"
                 ),
@@ -66,6 +71,11 @@ app.layout = html.Div(
                     multiple=True,
                     className='upload-file'
                 ),
+            ]
+        ),
+        html.Div(
+            children=[
+                html.Div(id='Mycards')
             ]
         ),
         html.Div(
@@ -124,25 +134,106 @@ def parse_data(contents, filename):
     return df
 
 
+@app.callback(Output('Mycards', 'children'),
+              [
+                  Input('upload-data', 'contents'),
+                  Input('upload-data', 'filename')
+              ])
+def update_cards(contents, filename):
+    cards = html.Div()
+
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+
+        total_queries = len(df['Queries'])
+        query_type = df['Type']
+        total_sqli_queries = 0
+        total_plain_queries = 0
+
+        for type in query_type:
+            if type == "sqli":
+                total_sqli_queries += 1
+            else:
+                total_plain_queries += 1
+
+        total_queries_card = [
+            dbc.CardHeader("Total Queries"),
+            dbc.CardBody(
+                [
+                    html.H5(f"{total_queries}", className="card-title"),
+                    dbc.Progress(value=int((total_queries/total_queries)*100),
+                                 label=f"{int(total_queries/total_queries)*100}%",
+                                 color="info", className="mb-3"),
+                ]
+            ),
+        ]
+
+        total_plain_queries_card = [
+            dbc.CardHeader("Total Plain Queries"),
+            dbc.CardBody(
+                [
+                    html.H5(f"{total_plain_queries}", className="card-title"),
+                    dbc.Progress(value=int((total_plain_queries/total_queries)*100),
+                                 label=f"{int((total_plain_queries/total_queries)*100)}%",
+                                 color="success", className="mb-3"),
+                ]
+            ),
+        ]
+
+        total_sqli_queries_card = [
+            dbc.CardHeader("Total SQLi Queries"),
+            dbc.CardBody(
+                [
+                    html.H5(f"{total_sqli_queries}", className="card-title"),
+                    dbc.Progress(value=int((total_sqli_queries/total_queries)*100),
+                                 label=f"{int((total_sqli_queries/total_queries)*100)}%",
+                                 color="danger", className="mb-3"),
+                ]
+            ),
+        ]
+
+        cards_row = dbc.Row(
+            [
+                dbc.Col(dbc.Card(total_queries_card, color="info", outline=True)),
+                dbc.Col(dbc.Card(total_plain_queries_card, color="success", outline=True)),
+                dbc.Col(dbc.Card(total_sqli_queries_card, color="danger", outline=True)),
+            ],
+            className="mb-4"
+        )
+
+        cards = html.Div([cards_row])
+
+    return cards
+
+
 @app.callback(Output('Mygraph', 'figure'),
               [
                   Input('upload-data', 'contents'),
                   Input('upload-data', 'filename')
               ])
 def update_graph(contents, filename):
-    fig = {
-        'layout': go.Layout(
-            plot_bgcolor=colors["graphBackground"],
-            paper_bgcolor=colors["graphBackground"])
-    }
-
+    x = []
+    y = []
     if contents:
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
-        df = df.set_index(df.columns[0])
-        fig['data'] = df.iplot(asFigure=True, kind='scatter', mode='lines+markers', size=1)
-
+        # df = df.set_index(df.columns[0])
+        x = df['Queries']
+        y = df['Date']
+    fig = go.Figure(
+        data=[
+            go.Scatter(
+                x=x,
+                y=y,
+                mode='lines+markers')
+        ],
+        layout=go.Layout(
+            plot_bgcolor=colors["graphBackground"],
+            paper_bgcolor=colors["graphBackground"]
+        ))
     return fig
 
 
