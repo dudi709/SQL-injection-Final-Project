@@ -6,6 +6,54 @@ body {
 
 .header {
     background-color: #222222;
+    height: 268px;
+    padding: 16px 0 0 0;
+}
+
+.header-emoji {
+    font-size: 48px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.header-title {
+    color: #FFFFFF;
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.header-description {
+    color: #CFCFCF;
+    margin: 4px auto;
+    text-align: center;
+    max-width: 384px;
+}
+
+.upload-file{
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    border-width: 1px;
+    border-style: dashed;
+    border-radius: 5px;
+    text-align: center;
+    margin: 10px
+}
+
+.data-table{
+    text-align: left;
+}
+/*
+body {
+    font-family: "Lato", sans-serif;
+    margin: 0;
+    background-color: #F7F7F7;
+}
+
+.header {
+    background-color: #222222;
     height: 288px;
     padding: 16px 0 0 0;
 }
@@ -74,4 +122,4 @@ body {
     font-weight: bold;
     color: #079A82;
 }
-
+*/
