@@ -4,7 +4,6 @@ pandas==1.0.5
 gunicorn==20.0.4
 numpy==1.19.5
 tensorflow==2.5.0
-keras==2.6.0
 dash-renderer==0.15.1
 dash-html-components==2.0.0
 dash-core-components==2.0.0
