@@ -1,5 +1,5 @@
 nltk==3.5
-dash==0.30.0
+dash==2.0.0
 pandas==1.0.5
 gunicorn==20.0.4
 numpy==1.19.5
