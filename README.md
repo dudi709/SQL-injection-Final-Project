@@ -203,9 +203,10 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+Dudi Biton - dudi709@gmail.com </br>
+Avihay Maman - avihaymaman1234@gmail.com
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [Github](https://github.com/dudi709/SQL-injection-Final-Project )
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
