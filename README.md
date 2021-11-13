@@ -121,7 +121,7 @@ For training the model:
   pip install dash-html-components==0.13.2
   pip install dash-core-components==0.38.1
   pip install plotly==5.3.1
-  pip install dash-bootstrap-components
+  pip install dash-bootstrap-components==1.0.0
   ```
 
 ### Installation
