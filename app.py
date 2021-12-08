@@ -1,17 +1,16 @@
 import base64
-import datetime
 import io
 import plotly.graph_objs as go
 import cufflinks as cf
 import os
-
+import datetime as dt
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import dash
 from dash.dependencies import Input, Output, State
 from dash import dcc
 from dash import html
 from dash import dash_table
-
+# from datetime import datetime, date
 import pandas as pd
 
 from predict_sql_queries import build_model
@@ -82,6 +81,18 @@ app.layout = html.Div(
         ),
         html.Div(
             children=[
+                dcc.DatePickerRange(
+                    id="date-range",
+                    start_date=dt.datetime(1990, 1, 1),
+                    end_date=dt.datetime.now(),
+                    min_date_allowed=dt.datetime(1990, 1, 1),
+                    max_date_allowed=dt.datetime.now(),
+                    display_format='DD/MM/YYYY'
+                ),
+            ]
+        ),
+        html.Div(
+            children=[
                 dcc.Graph(id='Mygraph')
             ]
         ),
@@ -103,6 +114,7 @@ def parse_data(contents, filename):
             # Assume that the user uploaded a CSV or TXT file
             df = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')))
+            df.sort_values("Date", inplace=True)
             # Add 'Type' column that classify each query to plain query and sqli query
             query_type = []
             for query in df.iloc[:, 0]:
@@ -165,8 +177,8 @@ def update_cards(contents, filename):
             dbc.CardBody(
                 [
                     html.H5(f"{total_queries}", className="card-title"),
-                    dbc.Progress(value=int((total_queries/total_queries)*100),
-                                 label=f"{int(total_queries/total_queries)*100}%",
+                    dbc.Progress(value=int((total_queries / total_queries) * 100),
+                                 label=f"{int(total_queries / total_queries) * 100}%",
                                  color="info", className="mb-3"),
                 ]
             ),
@@ -177,8 +189,8 @@ def update_cards(contents, filename):
             dbc.CardBody(
                 [
                     html.H5(f"{total_plain_queries}", className="card-title"),
-                    dbc.Progress(value=int((total_plain_queries/total_queries)*100),
-                                 label=f"{int((total_plain_queries/total_queries)*100)}%",
+                    dbc.Progress(value=int((total_plain_queries / total_queries) * 100),
+                                 label=f"{int((total_plain_queries / total_queries) * 100)}%",
                                  color="success", className="mb-3"),
                 ]
             ),
@@ -189,8 +201,8 @@ def update_cards(contents, filename):
             dbc.CardBody(
                 [
                     html.H5(f"{total_sqli_queries}", className="card-title"),
-                    dbc.Progress(value=int((total_sqli_queries/total_queries)*100),
-                                 label=f"{int((total_sqli_queries/total_queries)*100)}%",
+                    dbc.Progress(value=int((total_sqli_queries / total_queries) * 100),
+                                 label=f"{int((total_sqli_queries / total_queries) * 100)}%",
                                  color="danger", className="mb-3"),
                 ]
             ),
@@ -209,22 +221,71 @@ def update_cards(contents, filename):
 
     return cards
 
-
-@app.callback(Output('Mygraph', 'figure'),
+"""
+@app.callback(Output('date-picker-range', 'children'),
               [
                   Input('upload-data', 'contents'),
                   Input('upload-data', 'filename')
               ])
-def update_graph(contents, filename):
+def update_date_picker(contents, filename):
+    date_picker = html.Div()
+
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+        df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y")
+        df.sort_values("Date", inplace=True)
+        date_picker = html.Div([
+            dcc.DatePickerRange(
+                id='my-date-picker-range',
+                min_date_allowed=df.Date.min().date(),
+                max_date_allowed=df.Date.max().date(),
+                start_date=df.Date.min().date(),
+                end_date=df.Date.max().date(),
+                display_format='DD/MM/YYYY'
+            ),
+        ])
+
+    return date_picker
+"""
+
+@app.callback(Output('Mygraph', 'figure'),
+              [
+                  Input('upload-data', 'contents'),
+                  Input('upload-data', 'filename'),
+                  Input('date-range', 'start_date'),
+                  Input('date-range', 'end_date'),
+              ])
+def update_graph(contents, filename, start_date, end_date):
     x = []
     y = []
     if contents:
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
+
+        df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y")
+        df.sort_values("Date", inplace=True)
+
+
+        start_date = pd.to_datetime(start_date)
+        end_date = pd.to_datetime(end_date)
+
+        filtered_df = df[df.Date.between(
+            dt.datetime.strftime(start_date, "%Y-%m-%d"),
+            dt.datetime.strftime(end_date, "%Y-%m-%d")
+        )]
+        print(filtered_df)
+        """
+        mask = ((df.Date >= start_date)
+                & (df.Date <= end_date)
+                )
+        filtered_df = df.loc[mask, :]
+        """
         # df = df.set_index(df.columns[0])
-        x = df['Queries']
-        y = df['Date']
+        x = filtered_df['Date']
+        y = filtered_df['Queries']
     fig = go.Figure(
         data=[
             go.Scatter(
