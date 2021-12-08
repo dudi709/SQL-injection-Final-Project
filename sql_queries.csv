@@ -1,6 +1,6 @@
 Queries,Date
-OR SLEEP(5),12.11.1999
-select,12.11.1999
-And 1=1,13.09.2001
-hello my name is,04.02.2002
-or' 1=1,12.11.1993
+OR SLEEP(5),12/11/1999
+select,12/11/1999
+And 1=1,14/11/1999
+hello my name is,15/11/1999
+or' 1=1,13/11/1999
