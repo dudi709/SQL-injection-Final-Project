@@ -4,6 +4,7 @@ import plotly.graph_objs as go
 import cufflinks as cf
 import os
 import datetime as dt
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import dash
 from dash.dependencies import Input, Output, State
@@ -83,9 +84,9 @@ app.layout = html.Div(
             children=[
                 dcc.DatePickerRange(
                     id="date-range",
-                    start_date=dt.datetime(1990, 1, 1),
+                    start_date=dt.datetime(2000, 1, 1),
                     end_date=dt.datetime.now(),
-                    min_date_allowed=dt.datetime(1990, 1, 1),
+                    min_date_allowed=dt.datetime(1955, 1, 1),
                     max_date_allowed=dt.datetime.now(),
                     display_format='DD/MM/YYYY'
                 ),
@@ -221,34 +222,6 @@ def update_cards(contents, filename):
 
     return cards
 
-"""
-@app.callback(Output('date-picker-range', 'children'),
-              [
-                  Input('upload-data', 'contents'),
-                  Input('upload-data', 'filename')
-              ])
-def update_date_picker(contents, filename):
-    date_picker = html.Div()
-
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        df = parse_data(contents, filename)
-        df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y")
-        df.sort_values("Date", inplace=True)
-        date_picker = html.Div([
-            dcc.DatePickerRange(
-                id='my-date-picker-range',
-                min_date_allowed=df.Date.min().date(),
-                max_date_allowed=df.Date.max().date(),
-                start_date=df.Date.min().date(),
-                end_date=df.Date.max().date(),
-                display_format='DD/MM/YYYY'
-            ),
-        ])
-
-    return date_picker
-"""
 
 @app.callback(Output('Mygraph', 'figure'),
               [
@@ -268,7 +241,6 @@ def update_graph(contents, filename, start_date, end_date):
         df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y")
         df.sort_values("Date", inplace=True)
 
-
         start_date = pd.to_datetime(start_date)
         end_date = pd.to_datetime(end_date)
 
@@ -276,15 +248,9 @@ def update_graph(contents, filename, start_date, end_date):
             dt.datetime.strftime(start_date, "%Y-%m-%d"),
             dt.datetime.strftime(end_date, "%Y-%m-%d")
         )]
-        print(filtered_df)
-        """
-        mask = ((df.Date >= start_date)
-                & (df.Date <= end_date)
-                )
-        filtered_df = df.loc[mask, :]
-        """
+
         # df = df.set_index(df.columns[0])
-        x = filtered_df['Date']
+        x = filtered_df.Date.dt.strftime('%Y-%m-%d')
         y = filtered_df['Queries']
     fig = go.Figure(
         data=[
@@ -295,7 +261,8 @@ def update_graph(contents, filename, start_date, end_date):
         ],
         layout=go.Layout(
             plot_bgcolor=colors["graphBackground"],
-            paper_bgcolor=colors["graphBackground"]
+            paper_bgcolor=colors["graphBackground"],
+            xaxis=dict(tickformat='%b %d,%Y', tickmode='linear'),
         ))
     return fig
 
