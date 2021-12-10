@@ -13,6 +13,7 @@ from dash import html
 from dash import dash_table
 # from datetime import datetime, date
 import pandas as pd
+from collections import Counter
 
 from predict_sql_queries import build_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
@@ -231,8 +232,7 @@ def update_cards(contents, filename):
                   Input('date-range', 'end_date'),
               ])
 def update_graph(contents, filename, start_date, end_date):
-    x = []
-    y = []
+    fig = {}
     if contents:
         contents = contents[0]
         filename = filename[0]
@@ -248,22 +248,29 @@ def update_graph(contents, filename, start_date, end_date):
             dt.datetime.strftime(start_date, "%Y-%m-%d"),
             dt.datetime.strftime(end_date, "%Y-%m-%d")
         )]
+        filtered_df.sort_values("Date", inplace=True)
 
-        # df = df.set_index(df.columns[0])
-        x = filtered_df.Date.dt.strftime('%Y-%m-%d')
-        y = filtered_df['Queries']
-    fig = go.Figure(
-        data=[
-            go.Scatter(
-                x=x,
-                y=y,
-                mode='lines+markers')
+        new_filtered_df = filtered_df.groupby('Date')['Type'].apply(list).reset_index(name='Type')
+        x = list(Counter(new_filtered_df.Date.dt.strftime('%Y-%m-%d')).keys())
+        y1 = []
+        y2 = []
+        for lst_type in new_filtered_df['Type']:
+            y1.append(lst_type.count('plain'))
+            y2.append(lst_type.count('sqli'))
+
+        fig = {'data': [
+            {'x': x, 'y': y1, 'type': 'bar', 'name': 'plain', 'marker': dict(color='198754')},
+            {'x': x, 'y': y2, 'type': 'bar', 'name': 'sqli', 'marker': dict(color='DC3545')},
         ],
-        layout=go.Layout(
-            plot_bgcolor=colors["graphBackground"],
-            paper_bgcolor=colors["graphBackground"],
-            xaxis=dict(tickformat='%b %d,%Y', tickmode='linear'),
-        ))
+            'layout': {
+                'title': 'Plain vs. Malicious Queries on Selected Dates',
+                "xaxis": {"fixedrange": True},
+                "yaxis": {"fixedrange": True},
+                'plot_bgcolor': 'graphBackground',
+                'paper_bgcolor': 'graphBackground'
+            }
+        }
+
     return fig
 
 
