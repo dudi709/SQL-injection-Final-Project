@@ -238,7 +238,7 @@ def update_graph(contents, filename, start_date, end_date):
         filename = filename[0]
         df = parse_data(contents, filename)
 
-        df["Date"] = pd.to_datetime(df["Date"], format="%d/%m/%Y")
+        df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
         df.sort_values("Date", inplace=True)
 
         start_date = pd.to_datetime(start_date)
@@ -264,8 +264,6 @@ def update_graph(contents, filename, start_date, end_date):
         ],
             'layout': {
                 'title': 'Plain vs. Malicious Queries on Selected Dates',
-                "xaxis": {"fixedrange": True},
-                "yaxis": {"fixedrange": True},
                 'plot_bgcolor': 'graphBackground',
                 'paper_bgcolor': 'graphBackground'
             }
@@ -286,6 +284,9 @@ def update_table(contents, filename):
         contents = contents[0]
         filename = filename[0]
         df = parse_data(contents, filename)
+        df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
+        df["Date"] = df.Date.dt.strftime('%Y-%m-%d')
+        df.sort_values("Date", inplace=True)
         table = html.Div([
             html.H5(filename),
             dash_table.DataTable(
