@@ -4,6 +4,7 @@ import plotly.graph_objs as go
 import cufflinks as cf
 import os
 import datetime as dt
+import urllib
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import dash
@@ -22,17 +23,10 @@ import dash_bootstrap_components as dbc
 
 model, tokenizer1 = build_model()
 
-# external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
-"""
-external_stylesheets = [
-    {
-        "href": "https://fonts.googleapis.com/css2?"
-                "family=Lato:wght@400;700&display=swap",
-        "rel": "stylesheet",
-    },
-]
-"""
+# Create href for csv example file
+df_example_file = pd.read_csv('sql_queries_test.csv')
+csv_string = df_example_file.to_csv(index=False, encoding='utf-8')
+csv_string = "data:text/csv;charset=utf-8,%EF%BB%BF" + urllib.parse.quote(csv_string)
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
@@ -74,11 +68,38 @@ app.layout = html.Div(
                     multiple=True,
                     className='upload-file'
                 ),
+                html.P(
+                    children='* Acceptable only csv files with: Queries, Date headers.',
+                    style={
+                        'text-align': 'center',
+                        'color': 'red'
+                    }
+                ),
+                dbc.Row(
+                    dbc.Col(
+                        html.A(
+                            id="download_csv",
+                            children="Download example file",
+                            href=csv_string,
+                            download='example.csv',
+                            target="_blank",
+                            className="btn btn-outline-secondary btn-sm",
+                        ),
+                        width={"size": 6, "offset": 4},
+
+                    ),
+
+                    justify="center",
+                    align="center"
+                ),
             ]
         ),
         html.Div(
             children=[
-                html.Div(id='Mycards')
+                html.Div(id='Mycards',
+                         style={
+                             'marginTop': '6px'
+                         })
             ]
         ),
         html.Div(
@@ -89,7 +110,10 @@ app.layout = html.Div(
                     end_date=dt.datetime.now(),
                     min_date_allowed=dt.datetime(1955, 1, 1),
                     max_date_allowed=dt.datetime.now(),
-                    display_format='DD/MM/YYYY'
+                    display_format='DD/MM/YYYY',
+                    style={
+                        'textAlign': 'center'
+                    }
                 ),
             ]
         ),
@@ -103,11 +127,27 @@ app.layout = html.Div(
                 html.Div(id='output-data-upload')
             ]
         ),
+        html.Div(
+            children=[
+                html.Footer(id='Footer',
+                            children='Dudi & Avihay - SCE © 2022',
+                            style={
+                                'position': 'fixed',
+                                'left': 0,
+                                'bottom': 0,
+                                'width': '100%',
+                                'backgroundColor': 'rgb(34, 34, 34)',
+                                'color': 'white',
+                                'textAlign': 'center'
+                            })
+            ]
+        ),
     ]
 )
 
 
 def parse_data(contents, filename):
+    df = None
     content_type, content_string = contents.split(',')
 
     decoded = base64.b64decode(content_string)
@@ -120,8 +160,7 @@ def parse_data(contents, filename):
             # Add 'Type' column that classify each query to plain query and sqli query
             query_type = []
             for query in df.iloc[:, 0]:
-                temp_query_lst = []
-                temp_query_lst.append(query.lower())
+                temp_query_lst = [query.lower()]
                 token = tokenizer1.texts_to_sequences(temp_query_lst)
                 pad = pad_sequences(token, maxlen=150, padding="post")
                 decision = model.predict(pad)[0][0]
@@ -133,14 +172,9 @@ def parse_data(contents, filename):
                     query_type.append("sqli")
                     # print(f"{entry} - is identified as a malicious query !!!")
             df['Type'] = query_type
+        else:
+            return dash.no_update, False
 
-        elif 'xls' in filename:
-            # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded))
-        elif 'txt' or 'tsv' in filename:
-            # Assume that the user upl, delimiter = r'\s+'oaded an excel file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')), delimiter=r'\s+')
     except Exception as e:
         print(e)
         return html.Div([
@@ -288,7 +322,15 @@ def update_table(contents, filename):
         df["Date"] = df.Date.dt.strftime('%Y-%m-%d')
         df.sort_values("Date", inplace=True)
         table = html.Div([
-            html.H5(filename),
+            html.H5(children=f'{filename}',
+                    style={
+                        'textAlign': 'center'
+                    }),
+            html.P(children='A table that shows a classification of all queries, you can edit it and download it as a '
+                            'CSV file.',
+                   style={
+                       'textAlign': 'center'
+                   }),
             dash_table.DataTable(
                 data=df.to_dict('rows'),
                 columns=[{'name': i, 'id': i, "deletable": True} for i in df.columns],
@@ -316,11 +358,7 @@ def update_table(contents, filename):
                 },
             ),
             html.Hr(),
-            html.Div('Raw Content'),
-            html.Pre(contents[0:200] + '...', style={
-                'whiteSpace': 'pre-wrap',
-                'wordBreak': 'break-all'
-            })
+            html.Hr()
         ])
 
     return table
