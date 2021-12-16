@@ -282,6 +282,10 @@ def update_cards(contents, filename):
                             ],
                             id="modal",
                             is_open=True,
+                            style={
+                                'color': 'red',
+                                'textAlign': 'center'
+                            }
                         ),
                     ]
                 )
@@ -295,6 +299,10 @@ def update_cards(contents, filename):
                         ],
                         id="modal",
                         is_open=True,
+                        style={
+                            'color': 'red',
+                            'textAlign': 'center'
+                        }
                     ),
                 ]
             )
