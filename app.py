@@ -1,25 +1,20 @@
 import base64
 import io
-import plotly.graph_objs as go
-import cufflinks as cf
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import datetime as dt
 import urllib
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import dash
+import pandas as pd
+import dash_bootstrap_components as dbc
+
 from dash.dependencies import Input, Output, State
 from dash import dcc
 from dash import html
 from dash import dash_table
-# from datetime import datetime, date
-import pandas as pd
 from collections import Counter
-
-from predict_sql_queries import build_model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-
-import dash_bootstrap_components as dbc
+from predict_sql_queries import build_model
 
 model, tokenizer1 = build_model()
 
@@ -146,12 +141,174 @@ app.layout = html.Div(
 )
 
 
+def update_cards(df):
+    total_queries = len(df['Queries'])
+    query_type = df['Type']
+    total_sqli_queries = 0
+    total_plain_queries = 0
+
+    for type in query_type:
+        if type == "sqli":
+            total_sqli_queries += 1
+        else:
+            total_plain_queries += 1
+
+    total_queries_card = [
+        dbc.CardHeader("Total Queries"),
+        dbc.CardBody(
+            [
+                html.H5(f"{total_queries}", className="card-title"),
+                dbc.Progress(value=int((total_queries / total_queries) * 100),
+                             label=f"{int(total_queries / total_queries) * 100}%",
+                             color="info", className="mb-3"),
+            ]
+        ),
+    ]
+
+    total_plain_queries_card = [
+        dbc.CardHeader("Total Plain Queries"),
+        dbc.CardBody(
+            [
+                html.H5(f"{total_plain_queries}", className="card-title"),
+                dbc.Progress(value=int((total_plain_queries / total_queries) * 100),
+                             label=f"{int((total_plain_queries / total_queries) * 100)}%",
+                             color="success", className="mb-3"),
+            ]
+        ),
+    ]
+
+    total_sqli_queries_card = [
+        dbc.CardHeader("Total SQLi Queries"),
+        dbc.CardBody(
+            [
+                html.H5(f"{total_sqli_queries}", className="card-title"),
+                dbc.Progress(value=int((total_sqli_queries / total_queries) * 100),
+                             label=f"{int((total_sqli_queries / total_queries) * 100)}%",
+                             color="danger", className="mb-3"),
+            ]
+        ),
+    ]
+
+    cards_row = dbc.Row(
+        [
+            dbc.Col(dbc.Card(total_queries_card, color="info", outline=True)),
+            dbc.Col(dbc.Card(total_plain_queries_card, color="success", outline=True)),
+            dbc.Col(dbc.Card(total_sqli_queries_card, color="danger", outline=True)),
+        ],
+        className="mb-4"
+    )
+
+    cards = html.Div([cards_row])
+    return cards
+
+
+def update_graph(df, start_date, end_date):
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
+    df.sort_values("Date", inplace=True)
+
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
+
+    filtered_df = df[df.Date.between(
+        dt.datetime.strftime(start_date, "%Y-%m-%d"),
+        dt.datetime.strftime(end_date, "%Y-%m-%d")
+    )]
+    filtered_df.sort_values("Date", inplace=True)
+
+    new_filtered_df = filtered_df.groupby('Date')['Type'].apply(list).reset_index(name='Type')
+    x = list(Counter(new_filtered_df.Date.dt.strftime('%Y-%m-%d')).keys())
+    y1 = []
+    y2 = []
+    for lst_type in new_filtered_df['Type']:
+        y1.append(lst_type.count('plain'))
+        y2.append(lst_type.count('sqli'))
+
+    fig = {'data': [
+        {'x': x, 'y': y1, 'type': 'bar', 'name': 'plain', 'marker': dict(color='198754')},
+        {'x': x, 'y': y2, 'type': 'bar', 'name': 'sqli', 'marker': dict(color='DC3545')},
+    ],
+        'layout': {
+            'title': 'Plain vs. Malicious Queries on Selected Dates',
+            'plot_bgcolor': 'graphBackground',
+            'paper_bgcolor': 'graphBackground'
+        }
+    }
+    return fig
+
+
+def update_table(df, filename):
+    df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
+    df["Date"] = df.Date.dt.strftime('%Y-%m-%d')
+    df.sort_values("Date", inplace=True)
+    table = html.Div([
+        html.H5(children=f'{filename}',
+                style={
+                    'textAlign': 'center'
+                }),
+        html.P(
+            children='A table that shows a classification of all queries, you can edit it and export it '
+                     'as a CSV file.',
+            style={
+                'textAlign': 'center'
+            }),
+        dash_table.DataTable(
+            data=df.to_dict('rows'),
+            columns=[{'name': i, 'id': i, "deletable": True} for i in df.columns],
+            export_format='csv',
+            editable=True,
+            filter_action="native",
+            sort_action="native",
+            sort_mode="multi",
+            column_selectable="single",
+            row_deletable=True,
+            selected_columns=[],
+            selected_rows=[],
+            page_action="native",
+            page_current=0,
+            page_size=10,
+            style_header={
+                'backgroundColor': 'rgb(30, 30, 30)',
+                'color': 'white',
+                'textAlign': 'left'
+            },
+            style_data={
+                'backgroundColor': 'rgb(50, 50, 50)',
+                'color': 'white',
+                'textAlign': 'left'
+            },
+        ),
+        html.Hr(),
+        html.Hr()
+    ])
+    return table
+
+
+def assert_modal(modal_title, modal_body):
+    modal = html.Div(
+        [
+            dbc.Modal(
+                [
+                    dbc.ModalHeader(dbc.ModalTitle(modal_title)),
+                    dbc.ModalBody(modal_body),
+                ],
+                id="modal",
+                is_open=True,
+                style={
+                    'color': 'red',
+                    'textAlign': 'center'
+                }
+            ),
+        ]
+    )
+    return modal
+
+
 def check_integrity_csv(df):
     col_0 = df.columns[0]
     col_1 = df.columns[1]
     if col_0 == 'Queries' and col_1 == 'Date':
         try:
-            pd.to_datetime(df.Date, format='%Y-%m-%d',  errors='raise')
+            pd.to_datetime(df.Date, format='%Y-%m-%d', errors='raise')
             return True
         except ValueError:
             return False
@@ -170,10 +327,8 @@ def classification_query(df):
 
         if decision < 0.6:
             query_type.append("plain")
-            # print(f"{entry} - is not identified as a malicious query")
         else:
             query_type.append("sqli")
-            # print(f"{entry} - is identified as a malicious query !!!")
     df['Type'] = query_type
 
 
@@ -200,173 +355,17 @@ def parse_data(contents, filename):
     return df
 
 
-@app.callback(Output('Mycards', 'children'),
-              [
-                  Input('upload-data', 'contents'),
-                  Input('upload-data', 'filename')
-              ])
-def update_cards(contents, filename):
-    cards = html.Div()
-
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        if filename.endswith(".csv"):
-            df = parse_data(contents, filename)
-            if check_integrity_csv(df):
-                total_queries = len(df['Queries'])
-                query_type = df['Type']
-                total_sqli_queries = 0
-                total_plain_queries = 0
-
-                for type in query_type:
-                    if type == "sqli":
-                        total_sqli_queries += 1
-                    else:
-                        total_plain_queries += 1
-
-                total_queries_card = [
-                    dbc.CardHeader("Total Queries"),
-                    dbc.CardBody(
-                        [
-                            html.H5(f"{total_queries}", className="card-title"),
-                            dbc.Progress(value=int((total_queries / total_queries) * 100),
-                                         label=f"{int(total_queries / total_queries) * 100}%",
-                                         color="info", className="mb-3"),
-                        ]
-                    ),
-                ]
-
-                total_plain_queries_card = [
-                    dbc.CardHeader("Total Plain Queries"),
-                    dbc.CardBody(
-                        [
-                            html.H5(f"{total_plain_queries}", className="card-title"),
-                            dbc.Progress(value=int((total_plain_queries / total_queries) * 100),
-                                         label=f"{int((total_plain_queries / total_queries) * 100)}%",
-                                         color="success", className="mb-3"),
-                        ]
-                    ),
-                ]
-
-                total_sqli_queries_card = [
-                    dbc.CardHeader("Total SQLi Queries"),
-                    dbc.CardBody(
-                        [
-                            html.H5(f"{total_sqli_queries}", className="card-title"),
-                            dbc.Progress(value=int((total_sqli_queries / total_queries) * 100),
-                                         label=f"{int((total_sqli_queries / total_queries) * 100)}%",
-                                         color="danger", className="mb-3"),
-                        ]
-                    ),
-                ]
-
-                cards_row = dbc.Row(
-                    [
-                        dbc.Col(dbc.Card(total_queries_card, color="info", outline=True)),
-                        dbc.Col(dbc.Card(total_plain_queries_card, color="success", outline=True)),
-                        dbc.Col(dbc.Card(total_sqli_queries_card, color="danger", outline=True)),
-                    ],
-                    className="mb-4"
-                )
-
-                cards = html.Div([cards_row])
-            else:
-                cards = html.Div(
-                    [
-                        dbc.Modal(
-                            [
-                                dbc.ModalHeader(dbc.ModalTitle("Error")),
-                                dbc.ModalBody("Please upload a csv files with: Queries, Date headers. See Example "
-                                              "file! (Date format should be: Y-m-d)"),
-                            ],
-                            id="modal",
-                            is_open=True,
-                            style={
-                                'color': 'red',
-                                'textAlign': 'center'
-                            }
-                        ),
-                    ]
-                )
-        else:
-            cards = html.Div(
-                [
-                    dbc.Modal(
-                        [
-                            dbc.ModalHeader(dbc.ModalTitle("Error")),
-                            dbc.ModalBody("Please upload only csv files"),
-                        ],
-                        id="modal",
-                        is_open=True,
-                        style={
-                            'color': 'red',
-                            'textAlign': 'center'
-                        }
-                    ),
-                ]
-            )
-
-
-    return cards
-
-
-@app.callback(Output('Mygraph', 'figure'),
+@app.callback([Output('Mycards', 'children'), Output('Mygraph', 'figure'), Output('output-data-upload', 'children')],
               [
                   Input('upload-data', 'contents'),
                   Input('upload-data', 'filename'),
                   Input('date-range', 'start_date'),
                   Input('date-range', 'end_date'),
               ])
-def update_graph(contents, filename, start_date, end_date):
-    fig = {}
-    if contents:
-        contents = contents[0]
-        filename = filename[0]
-        if filename.endswith(".csv"):
-            df = parse_data(contents, filename)
-            if check_integrity_csv(df):
-                df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
-                df.sort_values("Date", inplace=True)
-
-                start_date = pd.to_datetime(start_date)
-                end_date = pd.to_datetime(end_date)
-
-                filtered_df = df[df.Date.between(
-                    dt.datetime.strftime(start_date, "%Y-%m-%d"),
-                    dt.datetime.strftime(end_date, "%Y-%m-%d")
-                )]
-                filtered_df.sort_values("Date", inplace=True)
-
-                new_filtered_df = filtered_df.groupby('Date')['Type'].apply(list).reset_index(name='Type')
-                x = list(Counter(new_filtered_df.Date.dt.strftime('%Y-%m-%d')).keys())
-                y1 = []
-                y2 = []
-                for lst_type in new_filtered_df['Type']:
-                    y1.append(lst_type.count('plain'))
-                    y2.append(lst_type.count('sqli'))
-
-                fig = {'data': [
-                    {'x': x, 'y': y1, 'type': 'bar', 'name': 'plain', 'marker': dict(color='198754')},
-                    {'x': x, 'y': y2, 'type': 'bar', 'name': 'sqli', 'marker': dict(color='DC3545')},
-                ],
-                    'layout': {
-                        'title': 'Plain vs. Malicious Queries on Selected Dates',
-                        'plot_bgcolor': 'graphBackground',
-                        'paper_bgcolor': 'graphBackground'
-                    }
-                }
-
-    return fig
-
-
-@app.callback(Output('output-data-upload', 'children'),
-              [
-                  Input('upload-data', 'contents'),
-                  Input('upload-data', 'filename')
-              ])
-def update_table(contents, filename):
+def update_components(contents, filename, start_date, end_date):
+    cards = html.Div()
     table = html.Div()
+    fig = {}
 
     if contents:
         contents = contents[0]
@@ -374,51 +373,20 @@ def update_table(contents, filename):
         if filename.endswith(".csv"):
             df = parse_data(contents, filename)
             if check_integrity_csv(df):
-                df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
-                df["Date"] = df.Date.dt.strftime('%Y-%m-%d')
-                df.sort_values("Date", inplace=True)
-                table = html.Div([
-                    html.H5(children=f'{filename}',
-                            style={
-                                'textAlign': 'center'
-                            }),
-                    html.P(
-                        children='A table that shows a classification of all queries, you can edit it and download it as a '
-                                 'CSV file.',
-                        style={
-                            'textAlign': 'center'
-                        }),
-                    dash_table.DataTable(
-                        data=df.to_dict('rows'),
-                        columns=[{'name': i, 'id': i, "deletable": True} for i in df.columns],
-                        export_format='csv',
-                        editable=True,
-                        filter_action="native",
-                        sort_action="native",
-                        sort_mode="multi",
-                        column_selectable="single",
-                        row_deletable=True,
-                        selected_columns=[],
-                        selected_rows=[],
-                        page_action="native",
-                        page_current=0,
-                        page_size=10,
-                        style_header={
-                            'backgroundColor': 'rgb(30, 30, 30)',
-                            'color': 'white',
-                            'textAlign': 'left'
-                        },
-                        style_data={
-                            'backgroundColor': 'rgb(50, 50, 50)',
-                            'color': 'white',
-                            'textAlign': 'left'
-                        },
-                    ),
-                    html.Hr(),
-                    html.Hr()
-                ])
+                cards = update_cards(df)
+                fig = update_graph(df, start_date, end_date)
+                table = update_table(df, filename)
+            else:
+                modal_title = "Error"
+                modal_body = "Please upload a csv files with: Queries, Date headers. See Example file! (Date format " \
+                             "should be: Y-m-d) "
+                cards = assert_modal(modal_title, modal_body)
+        else:
+            modal_title = "Error"
+            modal_body = "Please upload only csv files"
+            cards = assert_modal(modal_title, modal_body)
 
-    return table
+    return cards, fig, table
 
 
 if __name__ == '__main__':
