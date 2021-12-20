@@ -71,7 +71,7 @@
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 This project is a final project within the framework of a bachelor's degree in software engineering.
-First, we performed model training using machine learning libraries so that we could identify queries: malicious queries / normal queries. Malicious queries These are queries whose content may contain text that may harm the database (SQL injection).
+First, we performed model training using machine learning libraries so that we could identify queries: malicious queries / plain queries. Malicious queries These are queries whose content may contain text that may harm the database (SQL injection).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -100,7 +100,7 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-For training the model:
+For training the model: (You can use our pre-trained model which is in the model folder)
   ```sh
   pip install nltk==3.5
   pip install pandas==1.0.5
@@ -126,21 +126,15 @@ For training the model:
 
 ### Installation
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+We recommend working with a conda virtual environment to install the libraries but this is at your discretion.
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/dudi709/SQL-injection-Final-Project.git
    ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+2. Install the packages above
+
+3. Run `app.py`
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
