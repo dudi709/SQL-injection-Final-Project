@@ -142,13 +142,25 @@ app.layout = html.Div(
 
 
 def update_cards(df):
+    """Updates the cards that represents the percent of total, plain and malicious queries
+
+    Parameters
+    ----------
+    df : DataFrame
+        a dataframe object that represents the csv file that user was uploads
+
+    Returns
+    -------
+    dash.html.Div
+        a object that represented the content of the cards
+    """
     total_queries = len(df['Queries'])
     query_type = df['Type']
     total_sqli_queries = 0
     total_plain_queries = 0
 
-    for type in query_type:
-        if type == "sqli":
+    for q_type in query_type:
+        if q_type == "sqli":
             total_sqli_queries += 1
         else:
             total_plain_queries += 1
@@ -203,6 +215,22 @@ def update_cards(df):
 
 
 def update_graph(df, start_date, end_date):
+    """Updates the graph that represents the total plain and malicious queries at selected dates
+
+    Parameters
+    ----------
+    df : DataFrame
+        a dataframe object that represents the csv file that user was uploads
+    start_date : str
+        a string representing the start date of the data to be displayed in the graph
+    end_date : str
+        a string representing the end date of the data to be displayed in the graph
+
+    Returns
+    -------
+    dash.html.Div
+        a dict that represented the content of the graph
+    """
     df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     df.sort_values("Date", inplace=True)
 
@@ -237,6 +265,20 @@ def update_graph(df, start_date, end_date):
 
 
 def update_table(df, filename):
+    """Updates the table that classifies each query
+
+    Parameters
+    ----------
+    df : DataFrame
+        a dataframe object that represents the csv file that user was uploads
+    filename : str
+        a string representing the name of file that was upload
+
+    Returns
+    -------
+    dash.html.Div
+        a object that represented the content of the table
+    """
     df["Date"] = pd.to_datetime(df["Date"], format="%Y-%m-%d")
     df["Date"] = df.Date.dt.strftime('%Y-%m-%d')
     df.sort_values("Date", inplace=True)
