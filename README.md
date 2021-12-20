@@ -64,7 +64,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<div style="text-align:center">![Product Name Screen Shot][product-screenshot]</div>
 
 This project is a final project within the framework of a bachelor's degree in software engineering. First, we performed model training using machine learning libraries so that we could identify queries: malicious queries / plain queries and then we developed a web-dashboard app that displays data about queries using the model we trained.
 
@@ -172,5 +172,5 @@ Project Link: [Github](https://github.com/dudi709/SQL-injection-Final-Project )
 [issues-url]: https://github.com/dudi709/SQL-injection-Final-Project/issues
 [license-shield]: https://img.shields.io/github/license/dudi709/SQL-injection-Final-Project?style=for-the-badge
 [license-url]: https://github.com/dudi709/SQL-injection-Final-Project/blob/master/LICENSE.txt
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: images/sqli_img.png
 [usage-app-demo]: images/app_demo.jpg
