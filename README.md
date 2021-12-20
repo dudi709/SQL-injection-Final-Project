@@ -71,7 +71,7 @@
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 This project is a final project within the framework of a bachelor's degree in software engineering.
-First, we performed model training using machine learning libraries so that we could identify queries: malicious queries / normal queries. Malicious queries These are queries whose content may contain text that may harm the database (SQL injection).
+First, we performed model training using machine learning libraries so that we could identify queries: malicious queries / plain queries. Malicious queries These are queries whose content may contain text that may harm the database (SQL injection).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -100,7 +100,7 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-For training the model:
+For training the model: (You can use our pre-trained model which is in the model folder)
   ```sh
   pip install nltk==3.5
   pip install pandas==1.0.5
