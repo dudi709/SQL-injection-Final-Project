@@ -126,7 +126,7 @@ For training the model: (You can use our pre-trained model which is in the model
 
 ### Installation
 
-We recommend working with a conda virtual environment to install the directories but this is at your discretion.
+We recommend working with a conda virtual environment to install the libraries but this is at your discretion.
 
 1. Clone the repo
    ```sh
