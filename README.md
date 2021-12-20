@@ -68,8 +68,10 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-This project is a final project within the framework of a bachelor's degree in software engineering.
-First, we performed model training using machine learning libraries so that we could identify queries: malicious queries / plain queries. Malicious queries These are queries whose content may contain text that may harm the database (SQL injection).
+This project is a final project within the framework of a bachelor's degree in software engineering. First, we performed model training using machine learning libraries so that we could identify queries: malicious queries / plain queries and then we developed a web-dashboard app that displays data about queries using the model we trained.
+
+* Malicious queries are queries whose content may contain text that could harm the database (SQL injection).
+* Plain queries are queries without malicious targets.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
