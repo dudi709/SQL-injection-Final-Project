@@ -111,13 +111,7 @@ For training the model: (You can use our pre-trained model which is in the model
   pip install nltk==3.5
   pip install dash==0.30.0
   pip install pandas==1.0.5
-  pip install numpy==1.19.5
   pip install tensorflow==2.5.0
-  pip install keras==2.6.0
-  pip install dash-renderer==0.15.1
-  pip install dash-html-components==0.13.2
-  pip install dash-core-components==0.38.1
-  pip install plotly==5.3.1
   pip install dash-bootstrap-components==1.0.0
   ```
 
