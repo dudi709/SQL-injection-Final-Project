@@ -78,9 +78,9 @@ app.layout = html.Div(
                             href=csv_string,
                             download='example.csv',
                             target="_blank",
-                            className="btn btn-outline-secondary btn-sm",
+                            className="btn btn-outline-secondary btn-sm d-flex justify-content-center",
                         ),
-                        width={"size": 6, "offset": 4},
+                        width={"size": 2},
 
                     ),
 
