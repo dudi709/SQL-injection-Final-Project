@@ -134,7 +134,7 @@ We recommend working with a conda virtual environment to install the libraries b
 ## Usage
 
 ![App Demo][usage-app-demo]
-When the application is running you can see it [HERE](http://127.0.0.1:8050/).
+When the application is running you can see it [HERE](http://127.0.0.1:3000/).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
